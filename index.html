@@ -1,6 +1,73 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>मिथुन भाई सर्विस</title><style>
-body{margin:0;background:#08172e;color:#fff;font:16px system-ui;text-align:center}.wrap{max-width:650px;margin:8vh auto;padding:24px}.box{background:#122a49;padding:26px;border:1px solid #315781;border-radius:20px}h1{font-size:36px}b{color:#ffd21c}button{background:#1677ff;color:#fff;border:0;border-radius:10px;padding:13px 20px;font-weight:bold}input{padding:12px;border-radius:9px;border:0;width:90%;margin:10px}p{color:#c1d2e8}</style></head><body><div class="wrap"><div class="box"><h1>मिथुन <b>भाई</b> सर्विस</h1><h2>Buy Your ID</h2><p>Available Stock: <strong id="stock">लोड हो रहा है…</strong></p><p>Price Per ID: <strong id="rate">लोड हो रहा है…</strong></p><button onclick="setQ(2)">2 ID</button> <button onclick="setQ(5)">5 ID</button> <button onclick="setQ(10)">10 ID</button> <button onclick="setQ(20)">20 ID</button><p>Custom Quantity</p><input id="q" type="number" min="1" max="100" value="2"><h3>Total: <b id="total">—</b></h3><button onclick="buy()">Continue to Payment</button><p id="msg"></p></div></div><script>
-let rate=0;const fmt=n=>'₹'+Number(n).toLocaleString('en-IN');function setQ(n){q.value=n;calc()}function calc(){total.textContent=fmt((+q.value||0)*rate)}q.oninput=calc;
-fetch('/api/storefront').then(r=>r.json()).then(d=>{rate=d.rate;stock.textContent=d.stock+' IDs';document.getElementById('rate').textContent=fmt(rate)+' / ID';calc()}).catch(()=>{stock.textContent='Unavailable';rate=0;calc()});
-async function buy(){msg.textContent='';let n=+q.value;if(!Number.isInteger(n)||n<1||n>100){msg.textContent='Quantity 1 से 100 के बीच रखें।';return}let r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quantity:n})});let d=await r.json();msg.textContent=d.error||'Order बनाया गया। Razorpay Checkout UI जोड़ना अगला integration step है।';}
-</script></body></html>
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>मिथुन भाई सर्विस</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1220; --panel:#121d31; --line:#263752; --accent:#66d9c2; --muted:#a8b6ca; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:linear-gradient(145deg,#0b1220,#14243b); color:#f4f7fb; min-height:100vh; }
+    header { padding:28px 20px; border-bottom:1px solid var(--line); text-align:center; }
+    h1 { margin:0; font-size:clamp(28px,5vw,42px); }
+    header p { color:var(--muted); margin:10px 0 0; }
+    main { width:min(760px,calc(100% - 28px)); margin:34px auto; }
+    .panel { background:rgba(18,29,49,.96); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:0 18px 50px #0005; }
+    .status { display:inline-block; color:#10251f; background:var(--accent); border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px; }
+    h2 { margin:16px 0 8px; }
+    p { line-height:1.6; color:var(--muted); }
+    label { display:block; margin:20px 0 8px; font-weight:600; color:#e8eef8; }
+    select, input { width:100%; padding:13px; border-radius:10px; border:1px solid var(--line); background:#0b1527; color:white; font:inherit; }
+    button { margin-top:16px; width:100%; padding:14px; border:0; border-radius:10px; background:var(--accent); color:#09221c; font-weight:800; font-size:16px; cursor:pointer; }
+    #notice { display:none; margin-top:16px; padding:12px; border:1px solid #806b37; border-radius:10px; color:#ffe6a6; background:#3a301b; }
+    footer { text-align:center; padding:18px; color:#8fa0b8; font-size:13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>मिथुन भाई सर्विस</h1>
+    <p>Digital access service</p>
+  </header>
+  <main>
+    <section class="panel">
+      <span class="status">वेबसाइट ऑनलाइन है</span>
+      <h2>ऑर्डर पेज का डेमो</h2>
+      <p>यह शुरुआती टेस्ट पेज है। यहाँ अभी कोई असली ID, पासवर्ड या भुगतान उपलब्ध नहीं है।</p>
+      <label for="quantity">कितनी ID चाहिए?</label>
+      <select id="quantity">
+        <option value="2">2 ID</option>
+        <option value="5">5 ID</option>
+        <option value="10">10 ID</option>
+        <option value="20">20 ID</option>
+        <option value="custom">अपनी संख्या डालें</option>
+      </select>
+      <div id="customBox" hidden>
+        <label for="customQty">अपनी मात्रा लिखें</label>
+        <input id="customQty" type="number" min="1" max="100" placeholder="जैसे 3">
+      </div>
+      <button id="continueBtn" type="button">Continue</button>
+      <div id="notice" role="status"></div>
+    </section>
+  </main>
+  <footer>Help & Contact Us details admin setup के बाद जोड़ी जाएँगी।</footer>
+  <script>
+    const quantity = document.getElementById("quantity");
+    const customBox = document.getElementById("customBox");
+    const customQty = document.getElementById("customQty");
+    const notice = document.getElementById("notice");
+    quantity.addEventListener("change", () => {
+      customBox.hidden = quantity.value !== "custom";
+      notice.style.display = "none";
+    });
+    document.getElementById("continueBtn").addEventListener("click", () => {
+      const qty = quantity.value === "custom" ? Number(customQty.value) : Number(quantity.value);
+      if (!Number.isInteger(qty) || qty < 1 || qty > 100) {
+        notice.textContent = "कृपया 1 से 100 के बीच सही मात्रा डालें।";
+      } else {
+        notice.textContent = `डेमो चयन: ${qty} ID। भुगतान और असली ऑर्डर अभी चालू नहीं हैं।`;
+      }
+      notice.style.display = "block";
+    });
+  </script>
+</body>
+</html>
