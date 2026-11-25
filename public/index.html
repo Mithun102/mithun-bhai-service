@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>मिथुन भाई सर्विस</title>
+  <title>मिथुन भाई सर्विस — Demo Order</title>
   <style>
-    :root { color-scheme: dark; --bg:#0b1220; --panel:#121d31; --line:#263752; --accent:#66d9c2; --muted:#a8b6ca; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:linear-gradient(145deg,#0b1220,#14243b); color:#f4f7fb; min-height:100vh; }
-    header { padding:28px 20px; border-bottom:1px solid var(--line); text-align:center; }
-    h1 { margin:0; font-size:clamp(28px,5vw,42px); }
-    header p { color:var(--muted); margin:10px 0 0; }
-    main { width:min(760px,calc(100% - 28px)); margin:34px auto; }
-    .panel { background:rgba(18,29,49,.96); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:0 18px 50px #0005; }
-    .status { display:inline-block; color:#10251f; background:var(--accent); border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px; }
-    h2 { margin:16px 0 8px; }
-    p { line-height:1.6; color:var(--muted); }
-    label { display:block; margin:20px 0 8px; font-weight:600; color:#e8eef8; }
-    select, input { width:100%; padding:13px; border-radius:10px; border:1px solid var(--line); background:#0b1527; color:white; font:inherit; }
-    button { margin-top:16px; width:100%; padding:14px; border:0; border-radius:10px; background:var(--accent); color:#09221c; font-weight:800; font-size:16px; cursor:pointer; }
-    #notice { display:none; margin-top:16px; padding:12px; border:1px solid #806b37; border-radius:10px; color:#ffe6a6; background:#3a301b; }
-    footer { text-align:center; padding:18px; color:#8fa0b8; font-size:13px; }
+    :root { color-scheme: dark; --bg:#0b1424; --panel:#121f34; --line:#2a3b56; --mint:#62d7c2; --text:#f4f7fb; --muted:#b7c7dc; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; padding:28px 16px; background:linear-gradient(145deg,#0b1424,#101d31); color:var(--text); font-family:Arial,"Noto Sans Devanagari",sans-serif; }
+    header { text-align:center; padding:12px 0 28px; border-bottom:1px solid var(--line); }
+    h1 { margin:0; font-size:clamp(2rem,6vw,3.2rem); }
+    header p,.muted { color:var(--muted); }
+    main { width:min(100%,680px); margin:34px auto; padding:26px; background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:0 18px 50px #0005; }
+    .tag { display:inline-block; padding:7px 13px; border-radius:30px; background:var(--mint); color:#06251f; font-weight:700; }
+    h2 { margin:18px 0 8px; }
+    label { display:block; margin:18px 0 7px; font-weight:700; }
+    input { width:100%; padding:14px; border:1px solid var(--line); border-radius:10px; background:#0b1424; color:var(--text); font-size:1rem; }
+    button { width:100%; margin-top:22px; padding:15px; border:0; border-radius:11px; background:var(--mint); color:#06251f; font-size:1.05rem; font-weight:800; cursor:pointer; }
+    button:hover { filter:brightness(1.06); }
+    .notice { margin-top:18px; padding:13px; border:1px solid #8a6b26; border-radius:10px; background:#382f1c; color:#ffe2a0; line-height:1.5; }
+    #result { display:none; margin-top:18px; padding:14px; border-radius:10px; background:#123a35; border:1px solid #267d70; line-height:1.6; }
+    footer { text-align:center; color:var(--muted); font-size:.9rem; margin:28px auto; }
   </style>
 </head>
 <body>
@@ -29,44 +29,29 @@
     <p>Digital access service</p>
   </header>
   <main>
-    <section class="panel">
-      <span class="status">वेबसाइट ऑनलाइन है</span>
-      <h2>ऑर्डर पेज का डेमो</h2>
-      <p>यह शुरुआती टेस्ट पेज है। यहाँ अभी कोई असली ID, पासवर्ड या भुगतान उपलब्ध नहीं है।</p>
-      <label for="quantity">कितनी ID चाहिए?</label>
-      <select id="quantity">
-        <option value="2">2 ID</option>
-        <option value="5">5 ID</option>
-        <option value="10">10 ID</option>
-        <option value="20">20 ID</option>
-        <option value="custom">अपनी संख्या डालें</option>
-      </select>
-      <div id="customBox" hidden>
-        <label for="customQty">अपनी मात्रा लिखें</label>
-        <input id="customQty" type="number" min="1" max="100" placeholder="जैसे 3">
-      </div>
-      <button id="continueBtn" type="button">Continue</button>
-      <div id="notice" role="status"></div>
-    </section>
+    <span class="tag">वेबसाइट ऑनलाइन है</span>
+    <h2>डेमो ऑर्डर पेज</h2>
+    <p class="muted">यह केवल शुरुआती टेस्ट पेज है। यहाँ कोई असली ID, पासवर्ड या भुगतान नहीं लिया जाएगा।</p>
+    <form id="demoForm">
+      <label for="id1">पहली ID (टेस्ट के लिए कोई नकली नाम लिखें)</label>
+      <input id="id1" name="id1" type="text" placeholder="उदाहरण: TEST-001" required>
+      <label for="id2">दूसरी ID (टेस्ट के लिए कोई नकली नाम लिखें)</label>
+      <input id="id2" name="id2" type="text" placeholder="उदाहरण: TEST-002" required>
+      <button type="submit">Demo Order Submit करें</button>
+    </form>
+    <div class="notice">ध्यान दें: यह डेमो है। जानकारी सर्वर पर सेव या किसी को भेजी नहीं जाती। असली ऑर्डर और भुगतान अभी चालू नहीं हैं।</div>
+    <div id="result" role="status" aria-live="polite"></div>
   </main>
-  <footer>Help & Contact Us details admin setup के बाद जोड़ी जाएँगी।</footer>
+  <footer>Help &amp; Contact details बाद में जोड़े जाएँगे।</footer>
   <script>
-    const quantity = document.getElementById("quantity");
-    const customBox = document.getElementById("customBox");
-    const customQty = document.getElementById("customQty");
-    const notice = document.getElementById("notice");
-    quantity.addEventListener("change", () => {
-      customBox.hidden = quantity.value !== "custom";
-      notice.style.display = "none";
-    });
-    document.getElementById("continueBtn").addEventListener("click", () => {
-      const qty = quantity.value === "custom" ? Number(customQty.value) : Number(quantity.value);
-      if (!Number.isInteger(qty) || qty < 1 || qty > 100) {
-        notice.textContent = "कृपया 1 से 100 के बीच सही मात्रा डालें।";
-      } else {
-        notice.textContent = `डेमो चयन: ${qty} ID। भुगतान और असली ऑर्डर अभी चालू नहीं हैं।`;
-      }
-      notice.style.display = "block";
+    document.getElementById('demoForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const first = document.getElementById('id1').value.trim();
+      const second = document.getElementById('id2').value.trim();
+      const result = document.getElementById('result');
+      if (!first || !second) return;
+      result.style.display = 'block';
+      result.textContent = 'डेमो सफल! दोनों टेस्ट ID दर्ज हो गईं। यह असली ऑर्डर नहीं है और डेटा कहीं भेजा या सेव नहीं किया गया।';
     });
   </script>
 </body>
